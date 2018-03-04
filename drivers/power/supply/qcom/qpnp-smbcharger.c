@@ -3905,6 +3905,13 @@ static void smbchg_external_power_changed(struct power_supply *psy)
 		vote(chip->usb_suspend_votable, POWER_SUPPLY_EN_VOTER,
 				!prop.intval, 0);
 
+#ifdef CONFIG_USB_MSM_OTG
+	rc = power_supply_get_property(chip->usb_psy,
+				POWER_SUPPLY_PROP_CURRENT_MAX, &prop);
+	if (rc == 0)
+		chip->usb_current_max = prop.intval;
+#endif
+
 	current_limit = chip->usb_current_max / 1000;
 
 	/* Override if type-c charger used */
