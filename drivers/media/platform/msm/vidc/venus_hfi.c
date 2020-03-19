@@ -4475,11 +4475,21 @@ static int __load_fw(struct venus_hfi_device *device)
 		goto fail_init_res;
 	}
 
-	rc = __initialize_packetization(device);
-	if (rc) {
-		dprintk(VIDC_ERR, "Failed to initialize packetization\n");
-		goto fail_init_pkt;
+	/* kholk: Legacy SoCs cannot initialize packetization
+	 *        in firmware load path because old bootloader
+	 */
+	if (!of_machine_is_compatible("qcom,msm8956") &&
+	    !of_machine_is_compatible("qcom,msm8976") &&
+	    !of_machine_is_compatible("qcom,msm8974") &&
+	    !of_machine_is_compatible("qcom,msm8994") &&
+	    !of_machine_is_compatible("qcom,msm8226")) {
+		rc = __initialize_packetization(device);
+		if (rc) {
+			dprintk(VIDC_ERR, "Failed to initialize packetization\n");
+			goto fail_init_pkt;
+		}
 	}
+
 	trace_msm_v4l2_vidc_fw_load_start("msm_v4l2_vidc venus_fw load start");
 
 	rc = __venus_power_on(device);
@@ -4619,6 +4629,7 @@ static int venus_hfi_get_core_capabilities(void *dev)
 static int __initialize_packetization(struct venus_hfi_device *device)
 {
 	int rc = 0;
+	int major_version;
 	const char *hfi_version;
 
 	if (!device || !device->res) {
@@ -4627,6 +4638,16 @@ static int __initialize_packetization(struct venus_hfi_device *device)
 	}
 
 	hfi_version = device->res->hfi_version;
+
+	if (!hfi_version) {
+		rc = __read_register(device, VIDC_WRAPPER_HW_VERSION);
+		major_version = (rc &
+			VIDC_WRAPPER_HW_VERSION_MAJOR_VERSION_MASK) >>
+			VIDC_WRAPPER_HW_VERSION_MAJOR_VERSION_SHIFT;
+
+		if (major_version > 2)
+			hfi_version = "3xx";
+	};
 
 	if (!hfi_version) {
 		device->packetization_type = HFI_PACKETIZATION_LEGACY;

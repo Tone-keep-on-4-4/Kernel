@@ -728,6 +728,9 @@ static struct clk_freq_tbl ftbl_cpp_clk_src[] = {
 	F_MM( 100000000, mmsscc_gpll0_div,    3,    0,     0),
 	F_MM( 200000000,     mmsscc_gpll0,    3,    0,     0),
 	F_MM( 320000000,  mmpll0_out_main,  2.5,    0,     0),
+#if defined(CONFIG_SONY_CAM_V4L2)
+	F_MM( 384000000, mmpll4_out_main, 2.5, 0, 0),
+#endif
 	F_MM( 480000000,  mmpll4_out_main,    2,    0,     0),
 	F_MM( 640000000,  mmpll4_out_main,  1.5,    0,     0),
 	F_END
@@ -1520,6 +1523,7 @@ static struct rcg_clk extpclk_clk_src = {
 		.flags = CLKFLAG_NO_RATE_CACHE,
 		VDD_DIG_FMAX_MAP3(LOWER, 150000000, LOW, 300000000,
 							NOMINAL, 600000000),
+		.flags = CLKFLAG_NO_RATE_CACHE,
 		CLK_INIT(extpclk_clk_src.c),
 	},
 };
@@ -3756,6 +3760,7 @@ int msm_mmsscc_8996_probe(struct platform_device *pdev)
 	ext_byte1_clk_src.c.flags = CLKFLAG_NO_RATE_CACHE;
 	ext_extpclk_clk_src.dev = &pdev->dev;
 	ext_extpclk_clk_src.clk_id = "extpclk_src";
+	ext_extpclk_clk_src.c.flags = CLKFLAG_NO_RATE_CACHE;
 
 	efuse = readl_relaxed(gpu_base);
 	gpu_speed_bin = ((efuse >> EFUSE_SHIFT_v3) & EFUSE_MASK_v3);

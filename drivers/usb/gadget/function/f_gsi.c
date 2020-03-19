@@ -12,7 +12,7 @@
 
 #include "f_gsi.h"
 #include "rndis.h"
-#include "debug.h"
+#include "../debug.h"
 
 static unsigned int gsi_in_aggr_size;
 module_param(gsi_in_aggr_size, uint, S_IRUGO | S_IWUSR);
@@ -3144,9 +3144,9 @@ static struct config_item_type gsi_func_rndis_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-
 static struct configfs_attribute *gsi_attrs[] = {
 	&gsi_attr_info,
+	&gsi_attr_rndis_wceis,
 	NULL,
 };
 
