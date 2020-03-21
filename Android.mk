@@ -15,14 +15,11 @@
 
 # Android makefile to build kernel as a part of Android Build
 
-ifeq ($(BUILD_KERNEL),true)
-ifeq ($(filter-out tone,$(PRODUCT_PLATFORM)),)
-
 KERNEL_SRC := $(call my-dir)
 
 ## Internal variables
 ifeq ($(OUT_DIR),out)
-KERNEL_OUT := $(ANDROID_BUILD_TOP)/$(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ
+KERNEL_OUT := $(shell pwd)/$(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ
 else
 KERNEL_OUT := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ
 endif
@@ -88,8 +85,8 @@ endif
 
 KERNEL_BIN := $(TARGET_PREBUILT_INT_KERNEL)
 
-KERNEL_HEADERS_INSTALL := $(KERNEL_OUT)/usr
-KERNEL_HEADERS_INSTALL_STAMP := $(KERNEL_OUT)/.headers_install_stamp
+KERNEL_HEADERS_INSTALL := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
+KERNEL_HEADERS_INSTALL_STAMP := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/.headers_install_stamp
 
 KERNEL_MODULES_INSTALL := system
 KERNEL_MODULES_OUT := $(TARGET_OUT)/lib/modules
@@ -110,7 +107,7 @@ endif
 endif
 
 ifneq ($(USE_CCACHE),)
-    ccache := $(ANDROID_BUILD_TOP)/prebuilts/misc/$(HOST_PREBUILT_TAG)/ccache/ccache
+    ccache := $(shell pwd)/prebuilts/misc/$(HOST_PREBUILT_TAG)/ccache/ccache
     # Check that the executable is here.
     ccache := $(strip $(wildcard $(ccache)))
 endif
@@ -137,9 +134,9 @@ endef
 
 ifeq ($(HOST_OS),darwin)
 ifeq (1,$(filter 1,$(shell echo "$$(( $(PLATFORM_SDK_VERSION) >= 24 ))" )))
-  MAKE_FLAGS += C_INCLUDE_PATH=$(ANDROID_BUILD_TOP)/external/elfutils/libelf/
+  MAKE_FLAGS += C_INCLUDE_PATH=$(shell pwd)/external/elfutils/libelf/
 else
-  MAKE_FLAGS += C_INCLUDE_PATH=$(ANDROID_BUILD_TOP)/external/elfutils/src/libelf/
+  MAKE_FLAGS += C_INCLUDE_PATH=$(shell pwd)/external/elfutils/src/libelf/
 endif
 endif
 
@@ -224,6 +221,3 @@ kernelconfig: $(KERNEL_OUT_STAMP)
 .PHONY: $(PRODUCT_OUT)/kernel
 $(PRODUCT_OUT)/kernel: $(KERNEL_BIN)
 	cp $(KERNEL_BIN) $(PRODUCT_OUT)/kernel
-
-endif # Sony AOSP devices
-endif # BUILD_KERNEL
