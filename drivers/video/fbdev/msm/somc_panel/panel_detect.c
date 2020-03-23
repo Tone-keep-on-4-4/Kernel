@@ -258,7 +258,6 @@ static int postdetect_update_panel(struct mdss_panel_data *pdata)
 	struct mdss_panel_specific_pdata *spec_pdata = NULL;
 	struct mdss_panel_info *pinfo;
 	struct mipi_panel_info *mipi;
-	int rc = 0;
 
 	if (pdata == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
@@ -284,13 +283,6 @@ static int postdetect_update_panel(struct mdss_panel_data *pdata)
 	pinfo->type =
 		((mipi->mode == DSI_VIDEO_MODE)
 			? MIPI_VIDEO_PANEL : MIPI_CMD_PANEL);
-
-	rc = mdss_dsi_clk_div_config(pinfo, mipi->frame_rate);
-	if (rc) {
-		pr_err("%s: unable to initialize the clk dividers\n",
-								__func__);
-		return rc;
-	}
 
 	ctrl_pdata->pclk_rate = mipi->dsi_pclk_rate;
 	ctrl_pdata->byte_clk_rate = pinfo->clk_rate / 8;
