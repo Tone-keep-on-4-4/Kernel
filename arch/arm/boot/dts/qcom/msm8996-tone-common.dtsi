@@ -34,7 +34,7 @@
 			compatible = "android,firmware";
 			fstab {
 				compatible = "android,fstab";
-				vendor {
+				odm {
 					status = "disabled";
 				};
 				system {
@@ -45,8 +45,8 @@
 					fsmgr_flags = "wait";
 					status = "ok";
 				};
-				odm {
-					compatible = "android,odm";
+				vendor {
+					compatible = "android,vendor";
 					dev = "/dev/block/platform/soc/7464900.sdhci/by-name/oem";
 					type = "ext4";
 					mnt_flags = "ro,barrier=1";
